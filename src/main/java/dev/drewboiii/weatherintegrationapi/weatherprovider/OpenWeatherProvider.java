@@ -2,8 +2,7 @@ package dev.drewboiii.weatherintegrationapi.weatherprovider;
 
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
-import dev.drewboiii.weatherintegrationapi.model.WeatherLocation;
-import dev.drewboiii.weatherintegrationapi.model.WeatherProviderLanguage;
+import dev.drewboiii.weatherintegrationapi.model.Location;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,12 +24,12 @@ public class OpenWeatherProvider implements WeatherProvider {
     }
 
     @Override
-    public WeatherNowDto getCurrent(WeatherLocation location) throws WeatherException {
+    public WeatherNowDto getCurrent(Location location, String language) throws WeatherException {
         String uri = UriComponentsBuilder.fromUriString(OPEN_WEATHER_API_URL)
                 .queryParam("appid", openWeatherApiKey)
                 .queryParam("lat", location.getLatitude())
                 .queryParam("lon", location.getLongitude())
-                .queryParam("lang", WeatherProviderLanguage.ENGLISH.getOpenWeatherLang())
+                .queryParam("lang", language)
                 .queryParam("units", "metric")
                 .buildAndExpand()
                 .toUriString();

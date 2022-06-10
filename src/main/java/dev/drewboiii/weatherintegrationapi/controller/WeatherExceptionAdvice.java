@@ -31,4 +31,13 @@ public class WeatherExceptionAdvice {
         return errorMessage;
     }
 
+    @ResponseBody
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    String weatherExceptionHandler(IllegalArgumentException ex) {
+        String errorMessage = ex.getMessage();
+        log.error(errorMessage, ex);
+        return errorMessage;
+    }
+
 }

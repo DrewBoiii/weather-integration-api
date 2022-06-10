@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.dto.openweather;
+package dev.drewboiii.weatherintegrationapi.dto.request.openweather;
 
 import lombok.Data;
 

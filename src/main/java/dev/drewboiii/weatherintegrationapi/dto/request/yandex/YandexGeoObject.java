@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.dto.yandex;
+package dev.drewboiii.weatherintegrationapi.dto.request.yandex;
 
 import lombok.Data;
 

@@ -1,10 +1,11 @@
 package dev.drewboiii.weatherintegrationapi.weatherprovider;
 
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
-import dev.drewboiii.weatherintegrationapi.dto.weatherapicom.WeatherApiComResponseDto;
+import dev.drewboiii.weatherintegrationapi.dto.request.weatherapicom.WeatherApiComResponseDto;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
-import dev.drewboiii.weatherintegrationapi.model.WeatherLocation;
-import dev.drewboiii.weatherintegrationapi.model.WeatherProviderLanguage;
+import dev.drewboiii.weatherintegrationapi.model.Location;
+import dev.drewboiii.weatherintegrationapi.model.SupportedLanguages;
+import dev.drewboiii.weatherintegrationapi.model.WeatherLocations;
 import dev.drewboiii.weatherintegrationapi.model.WeatherProviders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,17 +15,23 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Map;
+
 @Slf4j
 @Component("WEATHER_COM")
 public class WeatherComWeatherProvider implements WeatherProvider {
 
     private static final String WEATHER_COM_API_URL = "https://api.weatherapi.com/v1/forecast.json";
+
     public static final String KEY_PARAM = "key";
     public static final String LOCALITY_PARAM = "q";
     public static final String LANGUAGE_PARAM = "lang";
 
+    private static final Map<String, String> AVAILABLE_LANGUAGES =
+            Map.of(SupportedLanguages.RUSSIAN.name().toLowerCase(), "ru", SupportedLanguages.ENGLISH.name().toLowerCase(), "en");
+
     @Value("${weather-com.api.key}")
-    private String weatherApiComKey;
+    private String weatherComApiKey;
 
     private final RestTemplate restTemplate;
 
@@ -33,13 +40,16 @@ public class WeatherComWeatherProvider implements WeatherProvider {
     }
 
     @Override
-    public WeatherNowDto getCurrent(WeatherLocation location) throws WeatherException {
-        log.info("Send request to WeatherApi.com for location {}", location.name());
+    public WeatherNowDto getCurrent(Location location) throws WeatherException {
+        return this.getCurrent(location, AVAILABLE_LANGUAGES.get(SupportedLanguages.ENGLISH.name()));
+    }
 
+    @Override
+    public WeatherNowDto getCurrent(Location location, String language) throws WeatherException {
         String uri = UriComponentsBuilder.fromUriString(WEATHER_COM_API_URL)
-                .queryParam(KEY_PARAM, weatherApiComKey) // injection issues
+                .queryParam(KEY_PARAM, weatherComApiKey)
                 .queryParam(LOCALITY_PARAM, location.getLocality())
-                .queryParam(LANGUAGE_PARAM, WeatherProviderLanguage.ENGLISH.getWeatherComLang())
+                .queryParam(LANGUAGE_PARAM, language)
 //                .queryParam("days", "3")
 //                .queryParam("aqi", "no")
 //                .queryParam("alert", "no")
@@ -48,6 +58,7 @@ public class WeatherComWeatherProvider implements WeatherProvider {
 
         WeatherApiComResponseDto weatherApiComResponseDto;
         try {
+            log.info("Send request to WeatherCom API for location {}", location.getLocality());
             weatherApiComResponseDto = restTemplate.getForObject(uri, WeatherApiComResponseDto.class);
         } catch (RestClientException ex) {
             log.error("WeatherApi.com responded with an error {}", ex.getMessage());
@@ -61,4 +72,23 @@ public class WeatherComWeatherProvider implements WeatherProvider {
                 .build();
     }
 
+    @Override
+    public Map<String, String> getAvailableLanguages() {
+        return AVAILABLE_LANGUAGES;
+    }
+
+    @Override
+    public Map<String, Location> getAvailableLocations() {
+        return Map.of(
+                WeatherLocations.MOSCOW.name().toLowerCase(), Location.builder()
+                        .country("Russia")
+                        .locality("Moscow")
+                        .build(),
+                WeatherLocations.SAMARA.name().toLowerCase(), Location.builder()
+                        .country("Russia")
+                        .locality("Samara")
+                        .build()
+
+        );
+    }
 }
