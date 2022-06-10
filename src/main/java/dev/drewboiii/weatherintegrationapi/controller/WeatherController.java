@@ -24,7 +24,6 @@ public class WeatherController {
     }
 
 
-
 //    @GetMapping("/today")
 //    @ResponseStatus(HttpStatus.OK)
 //    public YandexWeatherApiResponseDto today() {
