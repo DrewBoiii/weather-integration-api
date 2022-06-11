@@ -1,10 +1,10 @@
 package dev.drewboiii.weatherintegrationapi.controller;
 
+import dev.drewboiii.weatherintegrationapi.exception.ApiKeyNotFoundException;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,6 +28,15 @@ public class WeatherExceptionAdvice {
     @ExceptionHandler(WeatherNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     String weatherNotFoundHandler(WeatherNotFoundException ex) {
+        String errorMessage = ex.getMessage();
+        log.error(errorMessage, ex);
+        return errorMessage;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ApiKeyNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    String apiKeyNotFoundHandler(ApiKeyNotFoundException ex) {
         String errorMessage = ex.getMessage();
         log.error(errorMessage, ex);
         return errorMessage;

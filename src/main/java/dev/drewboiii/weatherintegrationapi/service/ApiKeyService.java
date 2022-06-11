@@ -1,7 +1,9 @@
 package dev.drewboiii.weatherintegrationapi.service;
 
+import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRefreshRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.response.ApiKeyResponseDto;
+import dev.drewboiii.weatherintegrationapi.exception.ApiKeyNotFoundException;
 import dev.drewboiii.weatherintegrationapi.model.ApiKey;
 import dev.drewboiii.weatherintegrationapi.model.WeatherAuthApiKey;
 import dev.drewboiii.weatherintegrationapi.persistence.ApiKeyRepository;
@@ -9,11 +11,15 @@ import dev.drewboiii.weatherintegrationapi.persistence.projection.ApiKeyInlineDe
 import dev.drewboiii.weatherintegrationapi.persistence.projection.ApiKeyShortDetailsProjection;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -22,6 +28,7 @@ public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyGeneratorService apiKeyGeneratorService;
+    private final NamedParameterJdbcOperations template;
 
     public ApiKeyResponseDto generate(ApiKeyRequestDto apiKeyRequestDto) {
         String generatedApiKey = apiKeyGeneratorService.generate();
@@ -63,4 +70,41 @@ public class ApiKeyService {
         return contentInline.getInlineDetails();
     }
 
+    public ApiKeyResponseDto refresh(ApiKeyRefreshRequestDto apiKeyRefreshRequestDto) {
+        String oldKey = apiKeyRefreshRequestDto.getKey();
+        String email = apiKeyRefreshRequestDto.getEmail();
+
+        ApiKeyShortDetailsProjection oldKeyByContent = Optional.ofNullable(apiKeyRepository.getByContent(oldKey))
+                .orElseThrow(() -> new ApiKeyNotFoundException("API Key - " + oldKey + " wasn't found!"));
+
+        LocalDateTime validUntil = oldKeyByContent.getValidUntil();
+
+        if (validUntil.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("API Key is present!");
+        }
+
+        String generatedKey = apiKeyGeneratorService.generate();
+
+        LocalDateTime newValidUntilValue = LocalDateTime.now().plusDays(7L);
+        Integer responseStatus = template.execute(
+                "UPDATE api_key SET created_at = :createdAt, valid_until = :validUntil, content = :content WHERE content = :oldKey AND email = :email",
+                Map.of(
+                        "createdAt", LocalDateTime.now(),
+                        "validUntil", newValidUntilValue,
+                        "content", generatedKey,
+                        "email", email,
+                        "oldKey", oldKey),
+                PreparedStatement::executeUpdate
+        );
+
+        if (responseStatus == null || responseStatus != 1) {
+            throw new IllegalArgumentException("API Key wasn't updated!");
+        }
+
+        return ApiKeyResponseDto.builder()
+                .apiKey(generatedKey)
+                .mail(email)
+                .validUntil(newValidUntilValue)
+                .build();
+    }
 }
