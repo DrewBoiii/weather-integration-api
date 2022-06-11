@@ -9,10 +9,20 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
 @ControllerAdvice
 public class WeatherExceptionAdvice {
+
+    @ResponseBody
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    String handleAllExceptions(Exception ex, WebRequest request) {
+        String errorMessage = ex.getMessage();
+        log.error(errorMessage, ex);
+        return "Server error";
+    }
 
     @ResponseBody
     @ExceptionHandler(WeatherNotFoundException.class)
