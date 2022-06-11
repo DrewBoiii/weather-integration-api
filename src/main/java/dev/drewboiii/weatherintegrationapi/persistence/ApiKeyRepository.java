@@ -16,4 +16,6 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, UUID>, JpaSpecif
 
     ApiKeyInlineDetailsProjection getByContentAndEmail(String key, String email);
 
+    <T> T findByUuid(String uuid, Class<T> type);
+
 }
