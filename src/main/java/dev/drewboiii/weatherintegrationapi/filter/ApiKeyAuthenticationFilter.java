@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -43,6 +44,14 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
             log.error("Request with an invalid API Key.");
             response.setStatus(HttpStatus.FORBIDDEN.value());
             response.getWriter().write("Invalid API Key.");
+            return;
+        }
+
+        LocalDateTime validUntil = apiKeyDetails.getValidUntil();
+        if (validUntil.isBefore(LocalDateTime.now())) {
+            log.error("Request with an expired API Key.");
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().write("Expired API Key.");
             return;
         }
 
