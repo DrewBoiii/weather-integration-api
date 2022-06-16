@@ -5,6 +5,7 @@ import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -55,6 +56,15 @@ public class WeatherExceptionAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     String weatherExceptionHandler(IllegalArgumentException ex) {
+        String errorMessage = ex.getMessage();
+        log.error(errorMessage, ex);
+        return errorMessage;
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MailException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    String weatherExceptionHandler(MailException ex) {
         String errorMessage = ex.getMessage();
         log.error(errorMessage, ex);
         return errorMessage;

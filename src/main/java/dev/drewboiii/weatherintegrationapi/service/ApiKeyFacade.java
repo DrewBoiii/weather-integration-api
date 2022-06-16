@@ -15,17 +15,21 @@ public class ApiKeyFacade {
 
     private final ApiKeyService apiKeyService;
     private final MailService mailService;
-    private ApiKeyResponseDtoModelAssembler modelAssembler;
+    private final ApiKeyResponseDtoModelAssembler modelAssembler;
 
     public EntityModel<ApiKeyResponseDto> generate(ApiKeyRequestDto apiKeyRequestDto) {
         ApiKeyResponseDto apiKeyResponseDto = apiKeyService.generate(apiKeyRequestDto);
-        mailService.send(apiKeyRequestDto.getEmail(), ApiKeyMailSubject.GENERATE, apiKeyResponseDto.getApiKey());
+        mailService.send(apiKeyRequestDto.getEmail(),
+                ApiKeyMailSubject.GENERATE.name(),
+                String.format(ApiKeyMailSubject.GENERATE.getMessage(), apiKeyResponseDto.getApiKey(), apiKeyResponseDto.getValidInDays()));
         return modelAssembler.toModel(apiKeyResponseDto);
     }
 
     public EntityModel<ApiKeyResponseDto> refresh(ApiKeyRefreshRequestDto apiKeyRefreshRequestDto) {
         ApiKeyResponseDto apiKeyResponseDto = apiKeyService.refresh(apiKeyRefreshRequestDto);
-        mailService.send(apiKeyRefreshRequestDto.getEmail(), ApiKeyMailSubject.REFRESH, apiKeyResponseDto.getApiKey());
+        mailService.send(apiKeyRefreshRequestDto.getEmail(),
+                ApiKeyMailSubject.REFRESH.name(),
+                String.format(ApiKeyMailSubject.REFRESH.getMessage(), apiKeyResponseDto.getApiKey(), apiKeyResponseDto.getValidInDays()));
         return modelAssembler.toModel(apiKeyResponseDto);
     }
 
