@@ -8,16 +8,15 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Data
 @Builder
+@Table
 @Entity
-@Table(name = "api_key")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiKey {
+public class Request {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -28,25 +27,24 @@ public class ApiKey {
     @Column(name = "uuid", updatable = false, nullable = false)
     private UUID uuid;
 
-    @Column(unique = true)
-    private String content;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, targetEntity = ApiKey.class)
+    private ApiKey apiKey;
 
-    @Column(unique = true)
-    private String email;
+    @Column(name = "url")
+    private String requestUrl;
+
+    @Column
+    private String country;
+
+    @Column
+    private String method;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "valid_until")
-    private LocalDateTime validUntil;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "apiKey")
-    private List<Request> requests;
-
     @PrePersist
     void init() {
         this.createdAt = LocalDateTime.now();
-        this.validUntil = LocalDateTime.now().plusDays(7L);
     }
 
 }

@@ -1,6 +1,7 @@
 package dev.drewboiii.weatherintegrationapi.config;
 
 import dev.drewboiii.weatherintegrationapi.filter.ApiKeyAuthenticationFilter;
+import dev.drewboiii.weatherintegrationapi.filter.LogRequestFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+    private final LogRequestFilter logRequestFilter;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -36,6 +38,7 @@ public class SecurityConfig {
                 .antMatchers("/swagger-ui").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(logRequestFilter, ApiKeyAuthenticationFilter.class);
         return http.build();
     }
 
