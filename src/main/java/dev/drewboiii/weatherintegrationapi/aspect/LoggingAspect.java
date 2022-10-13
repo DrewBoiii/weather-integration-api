@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.aop;
+package dev.drewboiii.weatherintegrationapi.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,9 @@ import java.util.stream.IntStream;
 @Component
 public class LoggingAspect {
 
-    @Before("execution(* dev.drewboiii.weatherintegrationapi.controller.*.*(..)) " +
+    @Before("@annotation(getMapping) && execution(* dev.drewboiii.weatherintegrationapi.controller.*.*(..)) " +
             "&& !execution(* dev.drewboiii.weatherintegrationapi.controller.WeatherExceptionAdvice.*(*))")
-    public void logWeatherApiMethods(JoinPoint joinPoint) {
+    public void logWeatherApiGetMethods(JoinPoint joinPoint, GetMapping getMapping) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         String methodName = methodSignature.getName();
         Object[] args = joinPoint.getArgs();
@@ -26,7 +27,7 @@ public class LoggingAspect {
 
         Map<String, Object> nameValueArgMap = buildArgs(parameterNames, args);
 
-        log.info("HTTP request to method {} with args {}", methodName, nameValueArgMap);
+        log.info("HTTP request to path <{}> method name <{}> with args {}", getMapping.value()[0], methodName, nameValueArgMap);
     }
 
     private Map<String, Object> buildArgs(String[] parameterNames, Object[] args) {
