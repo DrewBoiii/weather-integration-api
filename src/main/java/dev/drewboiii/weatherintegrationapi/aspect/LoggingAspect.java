@@ -17,9 +17,8 @@ import java.util.stream.IntStream;
 @Component
 public class LoggingAspect {
 
-    @Before("@annotation(getMapping) && execution(* dev.drewboiii.weatherintegrationapi.controller.*.*(..)) " +
-            "&& !execution(* dev.drewboiii.weatherintegrationapi.controller.WeatherExceptionAdvice.*(*))")
-    public void logWeatherApiGetMethods(JoinPoint joinPoint, GetMapping getMapping) {
+    @Before("@annotation(getMapping)")
+    public void logApiGetMethods(JoinPoint joinPoint, GetMapping getMapping) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         String methodName = methodSignature.getName();
         Object[] args = joinPoint.getArgs();
@@ -27,7 +26,20 @@ public class LoggingAspect {
 
         Map<String, Object> nameValueArgMap = buildArgs(parameterNames, args);
 
-        log.info("HTTP request to path <{}> method name <{}> with args {}", getMapping.value()[0], methodName, nameValueArgMap);
+        log.info("HTTP GET Request. Path: {}, Method name: {}, Args: {}", getMapping.value()[0], methodName, nameValueArgMap);
+    }
+
+    @Before("execution(* dev.drewboiii.weatherintegrationapi.service.ApiKey*.*(*)) " +
+            "&& !execution(* dev.drewboiii.weatherintegrationapi.service.ApiKeyGeneratorService.*(*))")
+    public void logApiKeyService(JoinPoint joinPoint) {
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        String methodName = methodSignature.getName();
+        Object[] args = joinPoint.getArgs();
+        String[] parameterNames = methodSignature.getParameterNames();
+
+        Map<String, Object> nameValueArgMap = buildArgs(parameterNames, args);
+
+        log.info("API Key {} with args: {}", methodName, nameValueArgMap);
     }
 
     private Map<String, Object> buildArgs(String[] parameterNames, Object[] args) {

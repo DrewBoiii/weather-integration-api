@@ -39,7 +39,6 @@ public class ApiKeyService {
                 .email(email)
                 .build();
 
-        log.info("Generating API Key for email - {}", email);
         ApiKey saved = apiKeyRepository.save(apiKey);
 
         LocalDateTime validUntil = saved.getValidUntil();
@@ -53,7 +52,6 @@ public class ApiKeyService {
     }
 
     public ApiKeyResponseDto getDetails(String apiKey) {
-        log.info("Getting API Key details for the key - {}", apiKey);
         ApiKeyShortDetailsProjection projection = apiKeyRepository.getByContent(apiKey);
         LocalDateTime validUntil = projection.getValidUntil();
         return ApiKeyResponseDto.builder()
@@ -65,7 +63,6 @@ public class ApiKeyService {
     }
 
     public String getDetailsInline(String apiKey, String email) {
-        log.info("Getting API Key details for the key - {} and email - {}", apiKey, email);
         ApiKeyInlineDetailsProjection contentInline = apiKeyRepository.getByContentAndEmail(apiKey, email);
         return contentInline.getInlineDetails();
     }
