@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.model;
+package dev.drewboiii.weatherintegrationapi.config.meta;
 
 public enum SupportedLanguages {
 

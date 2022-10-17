@@ -1,8 +1,9 @@
-package dev.drewboiii.weatherintegrationapi.weatherprovider;
+package dev.drewboiii.weatherintegrationapi.weatherprovider.impl;
 
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
 import dev.drewboiii.weatherintegrationapi.model.Location;
+import dev.drewboiii.weatherintegrationapi.weatherprovider.WeatherProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

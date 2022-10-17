@@ -1,8 +1,8 @@
 package dev.drewboiii.weatherintegrationapi.service;
 
+import dev.drewboiii.weatherintegrationapi.config.meta.SupportedLanguages;
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
 import dev.drewboiii.weatherintegrationapi.model.Location;
-import dev.drewboiii.weatherintegrationapi.model.SupportedLanguages;
 import dev.drewboiii.weatherintegrationapi.weatherprovider.WeatherProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

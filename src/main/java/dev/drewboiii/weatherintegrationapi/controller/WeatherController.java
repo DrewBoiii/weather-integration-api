@@ -1,5 +1,6 @@
 package dev.drewboiii.weatherintegrationapi.controller;
 
+import dev.drewboiii.weatherintegrationapi.aspect.LimitHttpRequestsPerApiKey;
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
 import dev.drewboiii.weatherintegrationapi.service.WeatherService;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ public class WeatherController {
 
     @GetMapping("/now")
     @ResponseStatus(HttpStatus.OK)
+    @LimitHttpRequestsPerApiKey
     public WeatherNowDto now(@RequestParam String provider,
                              @RequestParam String location,
                              @RequestParam(name = "lang", required = false) String language) {

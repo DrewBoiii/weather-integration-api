@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.weatherprovider;
+package dev.drewboiii.weatherintegrationapi.weatherprovider.impl;
 
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherForecastDto;
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
@@ -8,9 +8,10 @@ import dev.drewboiii.weatherintegrationapi.dto.request.yandex.YandexWeatherNow;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherNotFoundException;
 import dev.drewboiii.weatherintegrationapi.model.Location;
-import dev.drewboiii.weatherintegrationapi.model.SupportedLanguages;
-import dev.drewboiii.weatherintegrationapi.model.WeatherLocations;
-import dev.drewboiii.weatherintegrationapi.model.WeatherProviders;
+import dev.drewboiii.weatherintegrationapi.config.meta.SupportedLanguages;
+import dev.drewboiii.weatherintegrationapi.config.meta.WeatherLocations;
+import dev.drewboiii.weatherintegrationapi.config.meta.WeatherProviders;
+import dev.drewboiii.weatherintegrationapi.weatherprovider.WeatherProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

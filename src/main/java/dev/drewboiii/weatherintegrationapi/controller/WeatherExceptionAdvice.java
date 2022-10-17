@@ -1,6 +1,7 @@
 package dev.drewboiii.weatherintegrationapi.controller;
 
 import dev.drewboiii.weatherintegrationapi.exception.ApiKeyNotFoundException;
+import dev.drewboiii.weatherintegrationapi.exception.TooManyRequestsToApiException;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,36 +27,18 @@ public class WeatherExceptionAdvice {
     }
 
     @ResponseBody
-    @ExceptionHandler(WeatherNotFoundException.class)
+    @ExceptionHandler({WeatherNotFoundException.class, ApiKeyNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    String weatherNotFoundHandler(WeatherNotFoundException ex) {
+    String notFoundHandler(RuntimeException ex) {
         String errorMessage = ex.getMessage();
         log.error(errorMessage, ex);
         return errorMessage;
     }
 
     @ResponseBody
-    @ExceptionHandler(ApiKeyNotFoundException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    String apiKeyNotFoundHandler(ApiKeyNotFoundException ex) {
-        String errorMessage = ex.getMessage();
-        log.error(errorMessage, ex);
-        return errorMessage;
-    }
-
-    @ResponseBody
-    @ExceptionHandler(WeatherException.class)
+    @ExceptionHandler({WeatherException.class, TooManyRequestsToApiException.class, IllegalArgumentException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    String weatherExceptionHandler(WeatherException ex) {
-        String errorMessage = ex.getMessage();
-        log.error(errorMessage, ex);
-        return errorMessage;
-    }
-
-    @ResponseBody
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-    String weatherExceptionHandler(IllegalArgumentException ex) {
+    String badRequestHandler(RuntimeException ex) {
         String errorMessage = ex.getMessage();
         log.error(errorMessage, ex);
         return errorMessage;
@@ -64,7 +47,7 @@ public class WeatherExceptionAdvice {
     @ResponseBody
     @ExceptionHandler(MailException.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    String weatherExceptionHandler(MailException ex) {
+    String mailExceptionHandler(MailException ex) {
         String errorMessage = ex.getMessage();
         log.error(errorMessage, ex);
         return errorMessage;

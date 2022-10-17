@@ -1,6 +1,6 @@
 package dev.drewboiii.weatherintegrationapi.dto.response;
 
-import dev.drewboiii.weatherintegrationapi.model.WeatherProviders;
+import dev.drewboiii.weatherintegrationapi.config.meta.WeatherProviders;
 import lombok.Builder;
 import lombok.Data;
 
