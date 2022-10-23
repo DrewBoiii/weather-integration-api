@@ -2,15 +2,14 @@ package dev.drewboiii.weatherintegrationapi.aspect;
 
 import dev.drewboiii.weatherintegrationapi.exception.TooManyRequestsToApiException;
 import dev.drewboiii.weatherintegrationapi.service.CounterService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,37 +20,40 @@ import java.lang.reflect.Method;
 @Slf4j
 @Aspect
 @Component
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class LimitHttpRequestsCountAspect {
 
-    CounterService counterService;
+    @Value("${application.security.max-requests-to-api}")
+    Integer maxRequestsToApi;
+
+    private final CounterService counterService;
 
     @SneakyThrows
     @Around("@annotation(LimitHttpRequestsPerApiKey)")
     public Object requestCount(ProceedingJoinPoint point) {
         MethodSignature methodSignature = (MethodSignature) point.getSignature();
         Method method = methodSignature.getMethod();
-
-        int maxRequestCount = 5; // TODO: 10/17/2022 property
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String apiKey = (String) authentication.getPrincipal();
-
+        String methodName = method.getName();
         String shortMethodSignature = point.getSignature().toShortString();
-        String cacheKey = DigestUtils.md5DigestAsHex((shortMethodSignature + apiKey).getBytes());
+
+        String cacheKey = buildCacheKey(shortMethodSignature);
 
         int counter = counterService.get(cacheKey);
 
-        if (counter > maxRequestCount) {
-            log.warn("Too many requests to API Method {}", method.getName());
-            throw new TooManyRequestsToApiException("Too many requests to API Method: " + method.getName());
+        if (counter > maxRequestsToApi) {
+            throw new TooManyRequestsToApiException("Too many requests to API Method: " + methodName);
         }
 
-        int incrementedCounter = counterService.incrementAndGet(cacheKey, counter);
-        log.info("Request counter value after increment for API Key {} is {}", apiKey, incrementedCounter);
+        counterService.increment(cacheKey, counter);
 
         return point.proceed();
+    }
+
+    private String buildCacheKey(String shortMethodSignature) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String apiKey = (String) authentication.getPrincipal();
+
+        return DigestUtils.md5DigestAsHex((shortMethodSignature + apiKey).getBytes());
     }
 
 }

@@ -1,12 +1,12 @@
 package dev.drewboiii.weatherintegrationapi.weatherprovider.impl;
 
-import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
-import dev.drewboiii.weatherintegrationapi.dto.request.weatherapicom.WeatherApiComResponseDto;
-import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
-import dev.drewboiii.weatherintegrationapi.model.Location;
 import dev.drewboiii.weatherintegrationapi.config.meta.SupportedLanguages;
 import dev.drewboiii.weatherintegrationapi.config.meta.WeatherLocations;
 import dev.drewboiii.weatherintegrationapi.config.meta.WeatherProviders;
+import dev.drewboiii.weatherintegrationapi.dto.request.weatherapicom.WeatherApiComResponseDto;
+import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
+import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
+import dev.drewboiii.weatherintegrationapi.model.Location;
 import dev.drewboiii.weatherintegrationapi.weatherprovider.WeatherProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,7 +31,7 @@ public class WeatherComWeatherProvider implements WeatherProvider {
     private static final Map<String, String> AVAILABLE_LANGUAGES =
             Map.of(SupportedLanguages.RUSSIAN.name().toLowerCase(), "ru", SupportedLanguages.ENGLISH.name().toLowerCase(), "en");
 
-    @Value("${weather-com.api.key}")
+    @Value("${application.weather-providers.weather-com.api-key}")
     private String weatherComApiKey;
 
     private final RestTemplate restTemplate;

@@ -15,7 +15,7 @@ public class OpenWeatherProvider implements WeatherProvider {
 
     private static final String OPEN_WEATHER_API_URL = "";
 
-    @Value("${open-weather.api.key}")
+    @Value("${application.weather-providers.open-weather.api-key}")
     private String openWeatherApiKey;
 
     private final RestTemplate restTemplate;

@@ -1,0 +1,61 @@
+spring:
+  main:
+    allow-circular-references: true
+  mvc:
+    pathmatch:
+      #needs for swagger purposes
+      matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql:weather-integration-api
+    username: postgres
+    password: ${POSTGRESQL_PASSWORD}
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.mail.ru
+    username: ${WEATHER_MAIL_USERNAME}
+    password: ${WEATHER_MAIL_PASSWORD}
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  redis:
+    host: localhost
+    port: 6379
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30M
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+application:
+  security:
+    max-requests-to-api: 100
+  weather-providers:
+    yandex-weather:
+      api-key: YANDEX_WEATHER_API_KEY
+    weather-com:
+      api-key: WEATHER_COM_API_KEY
+    open-weather:
+      api-key: OPEN_WEATHER_API_KEY
+  scheduler:
+    clean-table:
+      request:
+        cron: "0 0 0 1 */3 ?"
+        interval: "P3M"
+  cache:
+    redis:
+      cache-definitions:
+        - name: counter
+          ttl: 30m

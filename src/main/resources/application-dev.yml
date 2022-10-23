@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    show-sql: true
+
+application:
+  scheduler:
+    clean-table:
+      request:
+        cron: "-"

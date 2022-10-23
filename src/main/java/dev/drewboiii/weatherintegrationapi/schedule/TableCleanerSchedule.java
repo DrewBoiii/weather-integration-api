@@ -14,7 +14,7 @@ import java.time.Period;
 @RequiredArgsConstructor
 public class TableCleanerSchedule {
 
-    @Value("${schedule.clean-table.request.interval:P1M}")
+    @Value("${application.scheduler.clean-table.request.interval:P1M}")
     private Period interval;
 
     private final RequestService requestService;
@@ -22,7 +22,7 @@ public class TableCleanerSchedule {
     private final ApplicationContext applicationContext;
     private TableCleanerSchedule self;
 
-    @Scheduled(cron = "${schedule.clean-table.request.cron:-}")
+    @Scheduled(cron = "${application.scheduler.clean-table.request.cron:-}")
     public void cleanRequestTable() {
         requestService.deleteRequestsExpiredBy(interval);
     }

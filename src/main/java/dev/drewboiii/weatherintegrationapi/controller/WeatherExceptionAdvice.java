@@ -7,17 +7,15 @@ import dev.drewboiii.weatherintegrationapi.exception.WeatherNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class WeatherExceptionAdvice {
 
-    @ResponseBody
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     String handleAllExceptions(Exception ex, WebRequest request) {
@@ -26,7 +24,6 @@ public class WeatherExceptionAdvice {
         return "Server error";
     }
 
-    @ResponseBody
     @ExceptionHandler({WeatherNotFoundException.class, ApiKeyNotFoundException.class})
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     String notFoundHandler(RuntimeException ex) {
@@ -35,8 +32,7 @@ public class WeatherExceptionAdvice {
         return errorMessage;
     }
 
-    @ResponseBody
-    @ExceptionHandler({WeatherException.class, TooManyRequestsToApiException.class, IllegalArgumentException.class})
+    @ExceptionHandler({WeatherException.class, IllegalArgumentException.class})
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     String badRequestHandler(RuntimeException ex) {
         String errorMessage = ex.getMessage();
@@ -44,7 +40,14 @@ public class WeatherExceptionAdvice {
         return errorMessage;
     }
 
-    @ResponseBody
+    @ExceptionHandler(TooManyRequestsToApiException.class)
+    @ResponseStatus(value = HttpStatus.TOO_MANY_REQUESTS)
+    String tooManyRequestsHandler(TooManyRequestsToApiException ex) {
+        String errorMessage = ex.getMessage();
+        log.error(errorMessage, ex);
+        return errorMessage;
+    }
+
     @ExceptionHandler(MailException.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     String mailExceptionHandler(MailException ex) {

@@ -11,7 +11,7 @@ public class RestTemplateConfig {
 
     private static final String YANDEX_WEATHER_API_KEY_HEADER = "X-Yandex-API-Key";
 
-    @Value("${yandex.weather.api.key}")
+    @Value("${application.weather-providers.yandex-weather.api-key}")
     private String yandexWeatherApiKey;
 
     @Bean("YandexRestTemplate")
