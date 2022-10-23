@@ -4,7 +4,7 @@ import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRefreshRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.response.ApiKeyResponseDto;
 import dev.drewboiii.weatherintegrationapi.config.meta.ApiKeyMailSubjects;
-import dev.drewboiii.weatherintegrationapi.model.assembler.ApiKeyResponseDtoModelAssembler;
+import dev.drewboiii.weatherintegrationapi.assembler.ApiKeyResponseDtoModelAssembler;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;

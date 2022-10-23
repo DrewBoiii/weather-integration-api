@@ -1,32 +1,21 @@
 package dev.drewboiii.weatherintegrationapi.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
-@Data
+import static lombok.AccessLevel.PROTECTED;
+
+@Getter
+@Setter
 @Builder
 @Entity
 @Table(name = "api_key")
-@NoArgsConstructor
 @AllArgsConstructor
-public class ApiKey {
-
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    @Column(name = "uuid", updatable = false, nullable = false)
-    private UUID uuid;
+@NoArgsConstructor(access = PROTECTED)
+public class ApiKey extends AbstractDomainModel {
 
     @Column(unique = true)
     private String content;

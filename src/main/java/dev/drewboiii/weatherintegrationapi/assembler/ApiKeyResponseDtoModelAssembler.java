@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.model.assembler;
+package dev.drewboiii.weatherintegrationapi.assembler;
 
 import dev.drewboiii.weatherintegrationapi.controller.ApiKeyController;
 import dev.drewboiii.weatherintegrationapi.dto.response.ApiKeyResponseDto;

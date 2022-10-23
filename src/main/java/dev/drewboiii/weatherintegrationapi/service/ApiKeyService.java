@@ -52,7 +52,7 @@ public class ApiKeyService {
     }
 
     public ApiKeyResponseDto getDetails(String apiKey) {
-        ApiKeyShortDetailsProjection projection = apiKeyRepository.getByContent(apiKey);
+        ApiKeyShortDetailsProjection projection = apiKeyRepository.getByContentOrThrow(apiKey);
         LocalDateTime validUntil = projection.getValidUntil();
         return ApiKeyResponseDto.builder()
                 .apiKey(projection.getContent())
@@ -102,6 +102,7 @@ public class ApiKeyService {
                 .apiKey(generatedKey)
                 .mail(email)
                 .validUntil(newValidUntilValue)
+                .validInDays(LocalDateTime.now().until(newValidUntilValue, ChronoUnit.DAYS))
                 .build();
     }
 }

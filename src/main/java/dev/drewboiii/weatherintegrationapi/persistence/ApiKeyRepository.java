@@ -1,5 +1,6 @@
 package dev.drewboiii.weatherintegrationapi.persistence;
 
+import dev.drewboiii.weatherintegrationapi.exception.ApiKeyNotFoundException;
 import dev.drewboiii.weatherintegrationapi.model.ApiKey;
 import dev.drewboiii.weatherintegrationapi.persistence.projection.ApiKeyInlineDetailsProjection;
 import dev.drewboiii.weatherintegrationapi.persistence.projection.ApiKeyShortDetailsProjection;
@@ -16,6 +17,11 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, UUID>, JpaSpecif
     Optional<ApiKey> findApiKeyByContent(String apiKey);
 
     ApiKeyShortDetailsProjection getByContent(String key);
+
+    default ApiKeyShortDetailsProjection getByContentOrThrow(String key) {
+        return Optional.ofNullable(getByContent(key))
+                .orElseThrow(() -> new ApiKeyNotFoundException("API Key - " + key + " wasn't found!"));
+    }
 
     ApiKeyInlineDetailsProjection getByContentAndEmail(String key, String email);
 

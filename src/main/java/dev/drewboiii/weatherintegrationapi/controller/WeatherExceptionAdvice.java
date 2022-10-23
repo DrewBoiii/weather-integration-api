@@ -7,6 +7,7 @@ import dev.drewboiii.weatherintegrationapi.exception.WeatherNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.MailException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -51,6 +52,14 @@ public class WeatherExceptionAdvice {
     @ExceptionHandler(MailException.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     String mailExceptionHandler(MailException ex) {
+        String errorMessage = ex.getMessage();
+        log.error(errorMessage, ex);
+        return errorMessage;
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
+    String methodNotAllowedException(HttpRequestMethodNotSupportedException ex) {
         String errorMessage = ex.getMessage();
         log.error(errorMessage, ex);
         return errorMessage;

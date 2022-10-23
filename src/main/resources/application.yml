@@ -44,11 +44,11 @@ application:
     max-requests-to-api: 100
   weather-providers:
     yandex-weather:
-      api-key: YANDEX_WEATHER_API_KEY
+      api-key: ${YANDEX_WEATHER_API_KEY}
     weather-com:
-      api-key: WEATHER_COM_API_KEY
+      api-key: ${WEATHER_COM_API_KEY}
     open-weather:
-      api-key: OPEN_WEATHER_API_KEY
+      api-key: ${OPEN_WEATHER_API_KEY}
   scheduler:
     clean-table:
       request:
