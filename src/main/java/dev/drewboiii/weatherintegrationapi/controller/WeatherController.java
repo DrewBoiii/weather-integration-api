@@ -1,6 +1,6 @@
 package dev.drewboiii.weatherintegrationapi.controller;
 
-import dev.drewboiii.weatherintegrationapi.annotation.LimitHttpRequestsPerApiKey;
+import dev.drewboiii.weatherintegrationapi.aspect.LimitHttpRequestsPerApiKey;
 import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
 import dev.drewboiii.weatherintegrationapi.service.WeatherService;
 import lombok.AllArgsConstructor;

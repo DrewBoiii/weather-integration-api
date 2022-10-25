@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Setter
 @Builder
 @Entity
-@Table(name = "api_key")
+@Table(name = "api_key", indexes = @Index(name = "email", columnList = "email"))
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class ApiKey extends AbstractDomainModel {

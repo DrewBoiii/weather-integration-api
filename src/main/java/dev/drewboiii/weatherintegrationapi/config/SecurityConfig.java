@@ -20,6 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig {
 
+    private static final String[] WHITE_LIST_URLS = {
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/actuator/**"
+    };
+
     private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
     private final LogRequestFilter logRequestFilter;
 
@@ -30,15 +36,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
+                .csrf().disable()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .logout().disable()
+//                .requestCache().disable()???
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/swagger-ui").permitAll()
+                .antMatchers(WHITE_LIST_URLS).permitAll()
                 .anyRequest().authenticated();
+
         http.addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterAfter(logRequestFilter, ApiKeyAuthenticationFilter.class);
+
         return http.build();
     }
 

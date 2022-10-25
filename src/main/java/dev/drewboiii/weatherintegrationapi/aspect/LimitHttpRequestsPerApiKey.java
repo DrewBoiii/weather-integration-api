@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.annotation;
+package dev.drewboiii.weatherintegrationapi.aspect;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

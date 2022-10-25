@@ -15,11 +15,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.JoinType;
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -105,4 +108,18 @@ public class ApiKeyService {
                 .validInDays(LocalDateTime.now().until(newValidUntilValue, ChronoUnit.DAYS))
                 .build();
     }
+
+    public Set<ApiKey> getAllByEmails(Set<String> emails) {
+        return new HashSet<>(
+                apiKeyRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
+                            root.fetch("requests", JoinType.INNER);
+                            return criteriaBuilder.and(
+                                    root.get("email").in(emails),
+                                    criteriaBuilder.greaterThan(root.get("validUntil"), LocalDateTime.now())
+                            );
+                        }
+                )
+        );
+    }
+
 }
