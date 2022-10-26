@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  mail:
+    host: smtp.mail.ru
+    username: ${WEATHER_MAIL_USERNAME}
+    password: ${WEATHER_MAIL_PASSWORD}
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

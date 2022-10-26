@@ -8,6 +8,7 @@ import dev.drewboiii.weatherintegrationapi.dto.response.WeatherNowDto;
 import dev.drewboiii.weatherintegrationapi.exception.WeatherException;
 import dev.drewboiii.weatherintegrationapi.model.Location;
 import dev.drewboiii.weatherintegrationapi.weatherprovider.WeatherProvider;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @Component("WEATHER_COM")
+@RequiredArgsConstructor
 public class WeatherComWeatherProvider implements WeatherProvider {
 
     private static final String WEATHER_COM_API_URL = "https://api.weatherapi.com/v1/forecast.json";
@@ -35,10 +37,6 @@ public class WeatherComWeatherProvider implements WeatherProvider {
     private String weatherComApiKey;
 
     private final RestTemplate restTemplate;
-
-    public WeatherComWeatherProvider(@Qualifier("PlainRestTemplate") RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     @Override
     public WeatherNowDto getCurrent(Location location) throws WeatherException {
