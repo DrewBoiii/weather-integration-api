@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.service;
+package dev.drewboiii.mailservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +19,13 @@ public class MailService {
 
     private final MailSender mailSender;
 
-    public void send(String to, String subject, String text) {
+    public void send(String to, String subject, String payload) {
         log.info("Sending email to {}", to);
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(from);
         simpleMailMessage.setTo(to);
         simpleMailMessage.setSubject(subject);
-        simpleMailMessage.setText(text);
+        simpleMailMessage.setText(payload);
         simpleMailMessage.setSentDate(new Date());
         mailSender.send(simpleMailMessage);
     }

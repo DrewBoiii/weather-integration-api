@@ -34,6 +34,7 @@ public class ApiKeyService {
     private final NamedParameterJdbcOperations template;
 
     public ApiKeyResponseDto generate(ApiKeyRequestDto apiKeyRequestDto) {
+        // TODO: 10/26/2022 check existing of api key
         String generatedApiKey = apiKeyGeneratorService.generate();
         WeatherAuthApiKey weatherAuthApiKey = new WeatherAuthApiKey(generatedApiKey, AuthorityUtils.NO_AUTHORITIES);
         String email = apiKeyRequestDto.getEmail();
