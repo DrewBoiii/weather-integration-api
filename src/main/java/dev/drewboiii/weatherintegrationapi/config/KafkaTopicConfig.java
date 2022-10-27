@@ -27,4 +27,12 @@ public class KafkaTopicConfig {
                 .build();
     }
 
+    @Bean
+    public NewTopic mailServiceReplyTopic() {
+        // TODO: 10/26/2022 create topics from properties?
+        return TopicBuilder.name("mail-service-reply-topic")
+                .config(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+                .build();
+    }
+
 }

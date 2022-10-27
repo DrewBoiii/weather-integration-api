@@ -21,12 +21,14 @@ public class MailService {
 
     public void send(String to, String subject, String payload) {
         log.info("Sending email to {}", to);
+
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(from);
         simpleMailMessage.setTo(to);
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(payload);
         simpleMailMessage.setSentDate(new Date());
+
         mailSender.send(simpleMailMessage);
     }
 

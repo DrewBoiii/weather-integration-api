@@ -14,12 +14,13 @@ import org.springframework.stereotype.Component;
 public class ApiKeyFacade {
 
     private final ApiKeyService apiKeyService;
-    private final KafkaService kafkaService;
+    private final KafkaProducerService kafkaProducerService;
     private final ApiKeyResponseDtoModelAssembler modelAssembler;
 
     public EntityModel<ApiKeyResponseDto> generate(ApiKeyRequestDto apiKeyRequestDto) {
         ApiKeyResponseDto apiKeyResponseDto = apiKeyService.generate(apiKeyRequestDto);
-        kafkaService.sendEmailMessage(apiKeyRequestDto.getEmail(),
+        kafkaProducerService.sendEmailMessage(
+                apiKeyRequestDto.getEmail(),
                 ApiKeyMailSubjects.GENERATE.name(),
                 String.format(ApiKeyMailSubjects.GENERATE.getMessage(), apiKeyResponseDto.getApiKey(), apiKeyResponseDto.getValidInDays()));
         return modelAssembler.toModel(apiKeyResponseDto);
@@ -27,7 +28,8 @@ public class ApiKeyFacade {
 
     public EntityModel<ApiKeyResponseDto> refresh(ApiKeyRefreshRequestDto apiKeyRefreshRequestDto) {
         ApiKeyResponseDto apiKeyResponseDto = apiKeyService.refresh(apiKeyRefreshRequestDto);
-        kafkaService.sendEmailMessage(apiKeyRefreshRequestDto.getEmail(),
+        kafkaProducerService.sendEmailMessage(
+                apiKeyRefreshRequestDto.getEmail(),
                 ApiKeyMailSubjects.REFRESH.name(),
                 String.format(ApiKeyMailSubjects.REFRESH.getMessage(), apiKeyResponseDto.getApiKey(), apiKeyResponseDto.getValidInDays()));
         return modelAssembler.toModel(apiKeyResponseDto);
