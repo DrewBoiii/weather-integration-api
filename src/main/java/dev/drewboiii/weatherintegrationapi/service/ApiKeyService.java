@@ -1,15 +1,17 @@
 package dev.drewboiii.weatherintegrationapi.service;
 
+import dev.drewboiii.weatherintegrationapi.config.meta.MailDeliveringStatuses;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRefreshRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.response.ApiKeyResponseDto;
 import dev.drewboiii.weatherintegrationapi.exception.ApiKeyNotFoundException;
 import dev.drewboiii.weatherintegrationapi.model.ApiKey;
+import dev.drewboiii.weatherintegrationapi.model.EmailMessage;
 import dev.drewboiii.weatherintegrationapi.model.WeatherAuthApiKey;
 import dev.drewboiii.weatherintegrationapi.persistence.ApiKeyRepository;
 import dev.drewboiii.weatherintegrationapi.persistence.projection.ApiKeyInlineDetailsProjection;
 import dev.drewboiii.weatherintegrationapi.persistence.projection.ApiKeyShortDetailsProjection;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -26,7 +28,7 @@ import java.util.Set;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
@@ -34,13 +36,20 @@ public class ApiKeyService {
     private final NamedParameterJdbcOperations template;
 
     public ApiKeyResponseDto generate(ApiKeyRequestDto apiKeyRequestDto) {
-        // TODO: 10/26/2022 check existing of api key
+        String email = apiKeyRequestDto.getEmail();
+
+        if (apiKeyRepository.existsByEmailMessage_Email(email)) {
+            throw new RuntimeException("API Key already exists for this email");
+        }
+
         String generatedApiKey = apiKeyGeneratorService.generate();
         WeatherAuthApiKey weatherAuthApiKey = new WeatherAuthApiKey(generatedApiKey, AuthorityUtils.NO_AUTHORITIES);
-        String email = apiKeyRequestDto.getEmail();
+
+        EmailMessage emailMessage = EmailMessage.builder().email(email).status(MailDeliveringStatuses.NONE).build();
+
         ApiKey apiKey = ApiKey.builder()
                 .content(weatherAuthApiKey.getPrincipal())
-                .email(email)
+                .emailMessage(emailMessage)
                 .build();
 
         ApiKey saved = apiKeyRepository.save(apiKey);
@@ -48,7 +57,7 @@ public class ApiKeyService {
         LocalDateTime validUntil = saved.getValidUntil();
         return ApiKeyResponseDto.builder()
                 .apiKey(saved.getContent())
-                .mail(saved.getEmail())
+                .mail(saved.getEmailMessage().getEmail())
                 .createdAt(saved.getCreatedAt())
                 .validUntil(validUntil)
                 .validInDays(LocalDateTime.now().until(validUntil, ChronoUnit.DAYS))
@@ -60,14 +69,14 @@ public class ApiKeyService {
         LocalDateTime validUntil = projection.getValidUntil();
         return ApiKeyResponseDto.builder()
                 .apiKey(projection.getContent())
-                .mail(projection.getEmail())
+                .mail(projection.getEmailMessage().getEmail())
                 .validUntil(validUntil)
                 .validInDays(LocalDateTime.now().until(validUntil, ChronoUnit.DAYS))
                 .build();
     }
 
     public String getDetailsInline(String apiKey, String email) {
-        ApiKeyInlineDetailsProjection contentInline = apiKeyRepository.getByContentAndEmail(apiKey, email);
+        ApiKeyInlineDetailsProjection contentInline = apiKeyRepository.getByContentAndEmailMessage_Email(apiKey, email);
         return contentInline.getInlineDetails();
     }
 

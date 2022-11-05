@@ -23,7 +23,9 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, UUID>, JpaSpecif
                 .orElseThrow(() -> new ApiKeyNotFoundException("API Key - " + key + " wasn't found!"));
     }
 
-    ApiKeyInlineDetailsProjection getByContentAndEmail(String key, String email);
+    ApiKeyInlineDetailsProjection getByContentAndEmailMessage_Email(String key, String email);
+
+    Boolean existsByEmailMessage_Email(String email);
 
     <T> T findByUuid(String uuid, Class<T> type);
 

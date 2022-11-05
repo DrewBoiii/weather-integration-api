@@ -3,6 +3,7 @@ package dev.drewboiii.mailservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class MailService {
 
     private final MailSender mailSender;
 
-    public void send(String to, String subject, String payload) {
+    public void send(String to, String subject, String payload) throws MailException {
         log.info("Sending email to {}", to);
 
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();

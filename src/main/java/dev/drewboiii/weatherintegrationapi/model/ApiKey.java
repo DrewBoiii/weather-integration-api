@@ -12,7 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Setter
 @Builder
 @Entity
-@Table(name = "api_key", indexes = @Index(name = "email", columnList = "email"))
+@Table(name = "api_key")
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class ApiKey extends AbstractDomainModel {
@@ -20,8 +20,8 @@ public class ApiKey extends AbstractDomainModel {
     @Column(unique = true)
     private String content;
 
-    @Column(unique = true)
-    private String email;
+    @OneToOne(cascade = CascadeType.ALL)
+    private EmailMessage emailMessage;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
