@@ -59,3 +59,5 @@ application:
       cache-definitions:
         - name: counter
           ttl: 30m
+  kafka:
+    server: ${KAFKA_SERVER}

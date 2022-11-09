@@ -1,6 +1,6 @@
 package dev.drewboiii.weatherintegrationapi.service;
 
-import dev.drewboiii.weatherintegrationapi.dto.request.kafka.EmailDto;
+import dev.drewboiii.weatherintegrationapi.dto.kafka.EmailDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

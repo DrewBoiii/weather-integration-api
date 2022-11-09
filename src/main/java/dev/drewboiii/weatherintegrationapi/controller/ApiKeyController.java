@@ -37,7 +37,7 @@ public class ApiKeyController {
     }
 
     @PatchMapping("/refresh")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public EntityModel<ApiKeyResponseDto> refresh(@RequestBody @Valid ApiKeyRefreshRequestDto apiKeyRefreshRequestDto) {
         return apiKeyFacade.refresh(apiKeyRefreshRequestDto);
     }

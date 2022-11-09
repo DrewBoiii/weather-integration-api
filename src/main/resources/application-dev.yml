@@ -10,3 +10,5 @@ application:
     clean-table:
       request:
         cron: "-"
+  kafka:
+    server: localhost:9092

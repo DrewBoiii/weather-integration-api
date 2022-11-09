@@ -1,4 +1,4 @@
-package dev.drewboiii.weatherintegrationapi.dto.request.kafka;
+package dev.drewboiii.weatherintegrationapi.dto.kafka;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,12 +1,11 @@
 package dev.drewboiii.weatherintegrationapi.service;
 
+import dev.drewboiii.weatherintegrationapi.assembler.ApiKeyResponseDtoModelAssembler;
+import dev.drewboiii.weatherintegrationapi.config.meta.ApiKeyMailSubjects;
 import dev.drewboiii.weatherintegrationapi.config.meta.MailDeliveringStatuses;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRefreshRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.response.ApiKeyResponseDto;
-import dev.drewboiii.weatherintegrationapi.config.meta.ApiKeyMailSubjects;
-import dev.drewboiii.weatherintegrationapi.assembler.ApiKeyResponseDtoModelAssembler;
-import dev.drewboiii.weatherintegrationapi.model.EmailMessage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +14,6 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaSendCallback;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
@@ -38,6 +36,7 @@ public class ApiKeyFacade {
                 email,
                 ApiKeyMailSubjects.GENERATE.name(),
                 String.format(ApiKeyMailSubjects.GENERATE.getMessage(), apiKeyResponseDto.getApiKey(), apiKeyResponseDto.getValidInDays()));
+
         kafkaResponse.addCallback(new KafkaSendCallback<>() {
 
             @Override

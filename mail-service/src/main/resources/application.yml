@@ -27,3 +27,6 @@ spring:
           json:
             trusted:
               packages: "*"
+application:
+  kafka:
+    server: localhost:9092
