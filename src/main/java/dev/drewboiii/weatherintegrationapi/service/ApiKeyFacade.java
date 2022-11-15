@@ -42,13 +42,13 @@ public class ApiKeyFacade {
             @Override
             public void onFailure(KafkaProducerException ex) {
                 log.error("Message to 'mail-service-topic' wasn't delivered cause {}", ex.getMessage());
-                emailMessageService.updateStatusByEmail(email, MailDeliveringStatuses.FAILED);
+                emailMessageService.updateStatusByEmailAndSubject(email, MailDeliveringStatuses.FAILED, ApiKeyMailSubjects.GENERATE);
             }
 
             @Override
             public void onSuccess(SendResult<String, Object> ignore) {
                 log.info("Message to 'mail-service-topic' was successfully delivered");
-                emailMessageService.updateStatusByEmail(email, MailDeliveringStatuses.ONGOING);
+                emailMessageService.updateStatusByEmailAndSubject(email, MailDeliveringStatuses.ONGOING, ApiKeyMailSubjects.GENERATE);
             }
 
         });

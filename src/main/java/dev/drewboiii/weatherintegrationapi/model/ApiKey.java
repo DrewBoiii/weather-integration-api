@@ -21,7 +21,7 @@ public class ApiKey extends AbstractDomainModel {
     private String content;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private EmailMessage emailMessage;
+    private EmailInfo emailInfo;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

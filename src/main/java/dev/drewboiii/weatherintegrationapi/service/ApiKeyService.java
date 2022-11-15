@@ -1,11 +1,13 @@
 package dev.drewboiii.weatherintegrationapi.service;
 
+import dev.drewboiii.weatherintegrationapi.config.meta.ApiKeyMailSubjects;
 import dev.drewboiii.weatherintegrationapi.config.meta.MailDeliveringStatuses;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRefreshRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.request.ApiKeyRequestDto;
 import dev.drewboiii.weatherintegrationapi.dto.response.ApiKeyResponseDto;
 import dev.drewboiii.weatherintegrationapi.exception.ApiKeyNotFoundException;
 import dev.drewboiii.weatherintegrationapi.model.ApiKey;
+import dev.drewboiii.weatherintegrationapi.model.EmailInfo;
 import dev.drewboiii.weatherintegrationapi.model.EmailMessage;
 import dev.drewboiii.weatherintegrationapi.model.WeatherAuthApiKey;
 import dev.drewboiii.weatherintegrationapi.persistence.ApiKeyRepository;
@@ -21,10 +23,9 @@ import javax.persistence.criteria.JoinType;
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static java.util.Collections.emptyList;
 
 @Slf4j
 @Service
@@ -33,31 +34,36 @@ public class ApiKeyService {
 
     private final ApiKeyRepository apiKeyRepository;
     private final ApiKeyGeneratorService apiKeyGeneratorService;
+    private final EmailInfoService emailInfoService;
+    private final EmailMessageService emailMessageService;
     private final NamedParameterJdbcOperations template;
 
-    public ApiKeyResponseDto generate(ApiKeyRequestDto apiKeyRequestDto) {
-        String email = apiKeyRequestDto.getEmail();
+    public ApiKeyResponseDto generate(ApiKeyRequestDto dto) {
+        String email = dto.getEmail();
 
-        if (apiKeyRepository.existsByEmailMessage_Email(email)) {
+        if (apiKeyRepository.existsByEmailInfo_Email(email)) {
             throw new RuntimeException("API Key already exists for this email");
         }
 
         String generatedApiKey = apiKeyGeneratorService.generate();
-        WeatherAuthApiKey weatherAuthApiKey = new WeatherAuthApiKey(generatedApiKey, AuthorityUtils.NO_AUTHORITIES);
 
-        EmailMessage emailMessage = EmailMessage.builder().email(email).status(MailDeliveringStatuses.NONE).build();
-
-        ApiKey apiKey = ApiKey.builder()
-                .content(weatherAuthApiKey.getPrincipal())
-                .emailMessage(emailMessage)
-                .build();
+        ApiKey apiKey = buildApiKey(generatedApiKey, email);
 
         ApiKey saved = apiKeyRepository.save(apiKey);
+
+        EmailInfo emailInfo = emailInfoService.getByEmail(email);
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .subject(ApiKeyMailSubjects.GENERATE)
+                .status(MailDeliveringStatuses.NONE)
+                .emailInfo(emailInfo)
+                .build();
+        emailMessageService.save(emailMessage);
 
         LocalDateTime validUntil = saved.getValidUntil();
         return ApiKeyResponseDto.builder()
                 .apiKey(saved.getContent())
-                .mail(saved.getEmailMessage().getEmail())
+                .mail(saved.getEmailInfo().getEmail())
                 .createdAt(saved.getCreatedAt())
                 .validUntil(validUntil)
                 .validInDays(LocalDateTime.now().until(validUntil, ChronoUnit.DAYS))
@@ -69,14 +75,14 @@ public class ApiKeyService {
         LocalDateTime validUntil = projection.getValidUntil();
         return ApiKeyResponseDto.builder()
                 .apiKey(projection.getContent())
-                .mail(projection.getEmailMessage().getEmail())
+                .mail(projection.getEmailInfo().getEmail())
                 .validUntil(validUntil)
                 .validInDays(LocalDateTime.now().until(validUntil, ChronoUnit.DAYS))
                 .build();
     }
 
     public String getDetailsInline(String apiKey, String email) {
-        ApiKeyInlineDetailsProjection contentInline = apiKeyRepository.getByContentAndEmailMessage_Email(apiKey, email);
+        ApiKeyInlineDetailsProjection contentInline = apiKeyRepository.getByContentAndEmailInfo_Email(apiKey, email);
         return contentInline.getInlineDetails();
     }
 
@@ -96,6 +102,7 @@ public class ApiKeyService {
         String generatedKey = apiKeyGeneratorService.generate();
 
         LocalDateTime newValidUntilValue = LocalDateTime.now().plusDays(7L);
+        // TODO: 11/10/2022
         Integer responseStatus = template.execute(
                 "UPDATE api_key SET created_at = :createdAt, valid_until = :validUntil, content = :content WHERE content = :oldKey AND email = :email",
                 Map.of(
@@ -130,6 +137,18 @@ public class ApiKeyService {
                         }
                 )
         );
+    }
+
+    private ApiKey buildApiKey(String apiKey, String email) {
+        EmailInfo emailInfo = EmailInfo.builder()
+                .email(email)
+                .emailMessages(List.of())
+                .build();
+
+        return ApiKey.builder()
+                .content(apiKey)
+                .emailInfo(emailInfo)
+                .build();
     }
 
 }

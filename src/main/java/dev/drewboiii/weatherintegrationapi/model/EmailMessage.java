@@ -1,11 +1,13 @@
 package dev.drewboiii.weatherintegrationapi.model;
 
+
+import dev.drewboiii.weatherintegrationapi.config.meta.ApiKeyMailSubjects;
 import dev.drewboiii.weatherintegrationapi.config.meta.MailDeliveringStatuses;
 import lombok.*;
 
 import javax.persistence.*;
 
-@Table(indexes = @Index(name = "email", columnList = "email"))
+@Table
 @Entity
 @Getter
 @Setter
@@ -14,12 +16,19 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class EmailMessage extends AbstractDomainModel {
 
-    @Column(unique = true)
-    private String email;
-
     @Column
     @Enumerated(EnumType.STRING)
     private MailDeliveringStatuses status;
+
+    @Column
+    private String payload;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ApiKeyMailSubjects subject;
+
+    @ManyToOne(cascade = CascadeType.ALL, targetEntity = EmailInfo.class)
+    private EmailInfo emailInfo;
 
     @PrePersist
     private void init() {

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 public interface ApiKeyInlineDetailsProjection {
 
-    @Value("#{target.content + ', ' + target.emailMessage.email + ', ' + target.validUntil}")
+    @Value("#{target.content + ', ' + target.emailInfo.email + ', ' + target.validUntil}")
     String getInlineDetails();
 
 }
