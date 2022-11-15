@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface EmailInfoRepository extends JpaRepository<EmailInfo, String> {
+public interface EmailInfoRepository extends JpaRepository<EmailInfo, UUID> {
 
     Optional<EmailInfo> findByEmail(String email);
 

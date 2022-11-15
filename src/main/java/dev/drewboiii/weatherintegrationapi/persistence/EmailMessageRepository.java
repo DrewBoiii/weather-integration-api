@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface EmailMessageRepository extends JpaRepository<EmailMessage, String> {
+public interface EmailMessageRepository extends JpaRepository<EmailMessage, UUID> {
 
     @Modifying
     @Transactional

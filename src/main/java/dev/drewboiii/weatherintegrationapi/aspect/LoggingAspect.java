@@ -26,7 +26,12 @@ public class LoggingAspect {
 
         Map<String, Object> nameValueArgMap = buildArgs(parameterNames, args);
 
-        log.info("HTTP GET Request. Path: {}, Method name: {}, Args: {}", getMapping.value()[0], methodName, nameValueArgMap);
+
+        String path = "";
+        if (getMapping.value().length != 0) {
+            path = getMapping.value()[0];
+        }
+        log.info("HTTP GET Request. Path: {}, Method name: {}, Args: {}", path, methodName, nameValueArgMap);
     }
 
     @Before("execution(* dev.drewboiii.weatherintegrationapi.service.ApiKey*.*(*)) " +
